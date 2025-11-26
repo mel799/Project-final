@@ -46,7 +46,7 @@ rmse_last_year = np.sqrt(mean_squared_error(y_true, test_eval["naive_last_year"]
 mae_last_year = mean_absolute_error(y_true, test_eval["naive_last_year"])
 r2_last_year = r2_score(y_true, test_eval["naive_last_year"])   
 
-print("\n=== BASELINE NAIVE MODELS (evaluated on TEST set) ===")
+print("\n BASELINE NAIVE MODELS (evaluated on TEST set)")
 print(f"Naive Last Month  → RMSE: {rmse_last_month:.2f}, MAE: {mae_last_month:.2f}, R²: {r2_last_month:.3f}")
 print(f"Naive Last Year   → RMSE: {rmse_last_year:.2f}, MAE: {mae_last_year:.2f}, R²: {r2_last_year:.3f}")
 

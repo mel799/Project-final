@@ -40,7 +40,7 @@ rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
-print("=== LINEAR REGRESSION RESULTS (Test Set) ===")
+print("LINEAR REGRESSION RESULTS (Test )")
 print(f"RMSE: {rmse:.2f}")
 print(f"MAE:  {mae:.2f}")
 print(f"R²:   {r2:.4f}")
