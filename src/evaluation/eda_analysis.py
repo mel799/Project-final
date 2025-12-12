@@ -1,123 +1,81 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from sklearn.cluster import KMeans
-
-plt.style.use("ggplot")
 
 
-def run_eda(df, do_clustering=False, verbose=False):
-    """
-    Perform EDA on the merged dataset.
-    Saves all plots AND a text summary into results/eda/.
-    If verbose=False → nothing prints in the terminal.
-    """
+def run_eda(df):
 
     output_dir = "results/eda"
     os.makedirs(output_dir, exist_ok=True)
 
-    # Store EDA text results in a file instead of printing
+    # ==================================================
+    # TEXT SUMMARY
+    # ==================================================
     with open(f"{output_dir}/summary.txt", "w") as f:
 
-        f.write("=== EDA SUMMARY ===\n\n")
+        f.write("=== EXPLORATORY DATA ANALYSIS SUMMARY ===\n\n")
 
-        # ---------------------------------------------
-        # BASIC INFO
-        # ---------------------------------------------
-        f.write("DATA INFO:\n")
-        df.info(buf=f)
-        f.write("\n\n")
+        # Dataset overview
+        f.write("DATASET OVERVIEW\n")
+        f.write(f"Number of observations: {len(df)}\n")
+        f.write(f"Time span: {df['date'].min().date()} → {df['date'].max().date()}\n\n")
 
-        f.write("MISSING VALUES:\n")
+        # Missing values
+        f.write("MISSING VALUES\n")
         f.write(str(df.isna().sum()))
         f.write("\n\n")
 
-        f.write("SUMMARY STATISTICS:\n")
-        f.write(str(df.describe()))
+        # Summary statistics
+        f.write("SUMMARY STATISTICS (Electricity Consumption)\n")
+        f.write(str(df["electricity_consumption"].describe()))
         f.write("\n\n")
 
-    # ---------------------------------------------
-    # TIME SERIES
-    # ---------------------------------------------
-    plt.figure(figsize=(14,5))
-    plt.plot(df["date"], df["electricity_consumption"])
-    plt.title("Swiss Electricity Consumption Over Time (GWh)")
-    plt.xlabel("Year")
-    plt.ylabel("Consumption (GWh)")
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/time_series_consumption.png")
-    plt.close()
+        # Seasonality
+        df["month"] = df["date"].dt.month
+        monthly_avg = df.groupby("month")["electricity_consumption"].mean()
 
-    # ---------------------------------------------
-    # SEASONALITY
-    # ---------------------------------------------
-    df["year"] = df["date"].dt.year
-    df["month"] = df["date"].dt.month
+        f.write("SEASONALITY INSIGHT\n")
+        f.write("Average electricity consumption by month:\n")
+        f.write(str(monthly_avg))
+        f.write("\n\n")
 
-    monthly_avg = df.groupby("month")["electricity_consumption"].mean()
-
-    plt.figure(figsize=(12,5))
-    plt.plot(monthly_avg.index, monthly_avg.values)
-    plt.xticks(range(1,13))
-    plt.title("Average Electricity Consumption by Month (Seasonality)")
-    plt.xlabel("Month")
-    plt.ylabel("Average GWh")
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/monthly_seasonality.png")
-    plt.close()
-
-    # Boxplot
-    plt.figure(figsize=(12,6))
-    df.boxplot(column="electricity_consumption", by="month")
-    plt.title("Month-to-Month Variability")
-    plt.suptitle("")
-    plt.xlabel("Month")
-    plt.ylabel("Consumption (GWh)")
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/monthly_boxplot.png")
-    plt.close()
-
-    # ---------------------------------------------
-    # CORRELATION MATRIX
-    # ---------------------------------------------
-    corr = df[["electricity_consumption", "year", "month"]].corr()
-
-    plt.figure(figsize=(6,4))
-    plt.imshow(corr, cmap="coolwarm", interpolation="none")
-    plt.colorbar()
-    plt.xticks(range(len(corr)), corr.columns)
-    plt.yticks(range(len(corr)), corr.columns)
-    plt.title("Correlation Matrix")
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/correlation_matrix.png")
-    plt.close()
-
-    # ---------------------------------------------
-    # OPTIONAL CLUSTERING
-    # ---------------------------------------------
-    if do_clustering:
-
-        X = df[["electricity_consumption"]].values
-        kmeans = KMeans(n_clusters=3, random_state=0).fit(X)
-        df["cluster"] = kmeans.labels_
-
-        plt.figure(figsize=(14,5))
-        plt.scatter(
-            df["date"], df["electricity_consumption"],
-            c=df["cluster"], cmap="viridis", s=20
+        f.write(
+            "Interpretation:\n"
+            "- Strong seasonal pattern with higher consumption in winter.\n"
+            "- This justifies the use of monthly features, seasonal variables,\n"
+            "  heating degree days, and lag-12 features.\n\n"
         )
-        plt.title("K-means Clustering of Monthly Consumption")
-        plt.xlabel("Date")
-        plt.ylabel("GWh")
-        plt.tight_layout()
-        plt.savefig(f"{output_dir}/kmeans_clusters.png")
-        plt.close()
 
-        # Save cluster means into summary file
-        with open(f"{output_dir}/summary.txt", "a") as f:
-            f.write("\nCLUSTER MEANS:\n")
-            f.write(str(df.groupby("cluster")["electricity_consumption"].mean()))
+        # Correlation (numeric, no plot)
+        corr = df[
+            ["electricity_consumption", "temp", "heat_need", "gdp_real", "population"]
+        ].corr()["electricity_consumption"]
 
+        f.write("CORRELATION WITH ELECTRICITY CONSUMPTION\n")
+        f.write(str(corr))
 
-    if verbose:
-        print("EDA completed. Results saved in results/eda/")
+    # ==================================================
+    # PLOT: SEASONALITY
+    # ==================================================
+    plt.figure(figsize=(10, 4))
+    plt.plot(monthly_avg.index, monthly_avg.values, marker="o")
+    plt.xticks(range(1, 13))
+    plt.xlabel("Month")
+    plt.ylabel("Average Electricity Consumption (GWh)")
+    plt.title("Average Monthly Electricity Consumption (Seasonality)")
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/seasonality.png")
+    plt.close()
+    
+        # ==================================================
+    # TIME SERIES OF ELECTRICITY CONSUMPTION (EDA)
+    # ==================================================
+    plt.figure(figsize=(12, 4))
+    plt.plot(df["date"], df["electricity_consumption"], color="black")
+    plt.xlabel("Year")
+    plt.ylabel("Electricity Consumption (GWh)")
+    plt.title("Swiss Electricity Consumption Over Time")
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/electricity_consumption_time_series.png")
+    plt.close()
+

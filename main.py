@@ -1,3 +1,6 @@
+import os
+import joblib
+
 #Data Loading
 from src.data_loader.load_temp import load_temperature
 from src.data_loader.load_pop import load_population
@@ -26,6 +29,9 @@ from src.models_regression import (
     train_xgboost, predict_xgboost,
     train_xgboost_gridsearch
 )
+# Path to save/load tuned XGBoost model
+XGB_TUNED_MODEL_PATH = "results/models/xgboost_tuned_model.pkl"
+
 #Models Evaluation
 from src.models_evaluation import (
     evaluate_baseline, evaluate_linear_regression,
@@ -33,6 +39,8 @@ from src.models_evaluation import (
     save_scores
 )
 
+#Vizualization
+from src.model_visualization import plot_train_test_predictions
 
 def main():
     #------------------------------------------------------------------------------
@@ -64,14 +72,27 @@ def main():
 
     #Exploratory Data Analysis
     print("=== Running EDA ===")
-    run_eda(final_df, do_clustering=True, verbose=False)
+    run_eda(final_df)
     
     #-----------------------------------------------------------------------------
     # Train and test split, Modeling, Evaluation
     #-----------------------------------------------------------------------------
 
     # Split train / test
-    split_date = "2019-01-01"
+    # Sort by date (important!)
+    
+    final_df = final_df.sort_values("date").reset_index(drop=True)
+    
+    # Compute split index at 70%
+    
+    split_index = int(len(final_df) * 0.7)
+    
+    # Get split date
+    split_date = final_df.loc[split_index, "date"]
+    
+    print(f"Train/Test split date (70%): {split_date.date()}")
+
+    #Split data
     train = final_df[final_df["date"] < split_date].copy()
     test = final_df[final_df["date"] >= split_date].copy()
 
@@ -124,25 +145,46 @@ def main():
     rf_model = train_random_forest(train, feature_cols)
     test = predict_random_forest(rf_model, test, feature_cols)
     
+    # Add predictions to TRAIN set for visualization)
+    train = predict_random_forest(rf_model, train, feature_cols)
+
+    
     scores["Random Forest"] = evaluate_random_forest(test)
     # Save RF predictions
     output_path = "results/models/random_forest_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_rf"]
     test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
     print(f"Random Forest predictions saved to: {output_path}")
-    
-    # --- XGBOOST WITH GRID SEARCH ----------------------------------------------
 
-    print("\n=== Tuning XGBoost with GridSearchCV ===")
+    # --- XGBOOST WITH GRID SEARCH ----------------------------------------------
     
-    xgb_model, grid = train_xgboost_gridsearch(train, feature_cols)
+    print("\n=== XGBoost (Tuned) ===")
+    
+    if os.path.exists(XGB_TUNED_MODEL_PATH):
+        print("Loading cached tuned XGBoost model")
+        xgb_model = joblib.load(XGB_TUNED_MODEL_PATH)
+    
+    else:
+        print("No cached. Running GridSearchCV ...")
+        xgb_model, grid = train_xgboost_gridsearch(train, feature_cols)
+        
+        # Save the tuned model
+        
+        os.makedirs("results/models", exist_ok=True)
+        joblib.dump(xgb_model, XGB_TUNED_MODEL_PATH)
+        print("Tuned XGBoost model saved.")
+        
+    # Predict + evaluate
+        
     test = predict_xgboost(xgb_model, test, feature_cols)
-    scores["XGBoost (Tuned)"] = evaluate_xgboost(test)
-    # Save tuned XGB prediction
+    scores["XGBoost"] = evaluate_xgboost(test)
+        
+     # Save predictions
+        
     output_path = "results/models/xgboost_tuned_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_xgb"]
     test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
-    
+        
     print(f"Tuned XGBoost predictions saved to: {output_path}")
 
     # --- LASSO REGRESSION ---------------------------------------------------------
@@ -190,7 +232,16 @@ def main():
     print(f"MAE : {best_model_metrics['mae']:.2f}")
     print(f"R2  : {best_model_metrics['r2']:.4f}")
 
-
+    # Visualization of final model
+    print("\n=== Creating final model visualization ===")
+    
+    plot_train_test_predictions(
+        train_df=train,
+        test_df=test,
+        pred_col="prediction_rf",  # Random Forest has the best performance
+        model_name="Random Forest Regressor",
+        output_path="results/figures/random_forest_train_test.png"
+        )
 
 if __name__ == "__main__":
     main()

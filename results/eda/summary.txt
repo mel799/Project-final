@@ -1,30 +1,10 @@
-=== EDA SUMMARY ===
+=== EXPLORATORY DATA ANALYSIS SUMMARY ===
 
-DATA INFO:
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 397 entries, 0 to 396
-Data columns (total 14 columns):
- #   Column                   Non-Null Count  Dtype         
----  ------                   --------------  -----         
- 0   date                     397 non-null    datetime64[ns]
- 1   electricity_consumption  397 non-null    int64         
- 2   temp                     397 non-null    float64       
- 3   heat_need                397 non-null    float64       
- 4   quarter                  397 non-null    object        
- 5   gdp_real                 397 non-null    float64       
- 6   population               397 non-null    float64       
- 7   month                    397 non-null    int32         
- 8   year                     397 non-null    int32         
- 9   season                   397 non-null    object        
- 10  consumption_lag_1        397 non-null    float64       
- 11  consumption_lag_12       397 non-null    float64       
- 12  temp_lag_1               397 non-null    float64       
- 13  gdp_lag_1                397 non-null    float64       
-dtypes: datetime64[ns](1), float64(8), int32(2), int64(1), object(2)
-memory usage: 40.4+ KB
+DATASET OVERVIEW
+Number of observations: 397
+Time span: 1991-01-01 → 2024-01-01
 
-
-MISSING VALUES:
+MISSING VALUES
 date                       0
 electricity_consumption    0
 temp                       0
@@ -41,23 +21,43 @@ temp_lag_1                 0
 gdp_lag_1                  0
 dtype: int64
 
-SUMMARY STATISTICS:
-                                date  ...      gdp_lag_1
-count                            397  ...     397.000000
-mean   2007-07-02 01:01:39.748110848  ...  147352.871537
-min              1991-01-01 00:00:00  ...  110359.000000
-25%              1999-04-01 00:00:00  ...  122370.000000
-50%              2007-07-01 00:00:00  ...  148391.000000
-75%              2015-10-01 00:00:00  ...  168064.000000
-max              2024-01-01 00:00:00  ...  200762.000000
-std                              NaN  ...   26155.901825
+SUMMARY STATISTICS (Electricity Consumption)
+count     397.000000
+mean     4571.715365
+std       596.583317
+min      3352.000000
+25%      4220.000000
+50%      4460.000000
+75%      5020.000000
+max      6147.000000
+Name: electricity_consumption, dtype: float64
 
-[8 rows x 12 columns]
+SEASONALITY INSIGHT
+Average electricity consumption by month:
+month
+1     5384.235294
+2     4891.787879
+3     4966.636364
+4     4319.606061
+5     4219.242424
+6     4092.242424
+7     4020.242424
+8     4042.000000
+9     4207.151515
+10    4570.090909
+11    4913.878788
+12    5208.848485
+Name: electricity_consumption, dtype: float64
 
+Interpretation:
+- Strong seasonal pattern with higher consumption in winter.
+- This justifies the use of monthly features, seasonal variables,
+  heating degree days, and lag-12 features.
 
-CLUSTER MEANS:
-cluster
-0    5341.437500
-1    3723.471429
-2    4446.916279
+CORRELATION WITH ELECTRICITY CONSUMPTION
+electricity_consumption    1.000000
+temp                      -0.713061
+heat_need                  0.713061
+gdp_real                   0.492777
+population                 0.463890
 Name: electricity_consumption, dtype: float64
