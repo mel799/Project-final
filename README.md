@@ -12,36 +12,62 @@ conda activate electricity-forecast
 python main.py
 
 Expected output: 
-- Loaded data
+- Loaded data 
+    - 2 folders are created in the data folder, "clean" and "dataset"
+- Data analysis 
 - Trained regression models
+    - the models are saved in the folder "results/models
 - Performance comparaison using regression metrics (RMSE, MAE, R²)
-- Evaluation results of the best regression model
-- Best Model visualization
+    - Evaluation results of the best regression model are stored in results/models/model_scores.txt
+- Best Model visualization 
+    - stored in results/figures
 
 ## Project Structure
 
-project-final/
+pproject-final/
 ├── main.py                 # Main entry point
 ├── src/
-│   ├── data_loader.py      # Load & preprocess electricity data
+│   ├── data_loader    # Load & preprocess electricity data
+│       └──GDP_monthly.py   # transform data to monthly
+│       └──load_gdp         # loan and clean the GDP data
+│       └── ...
+│   ├── data_preprocessing
+│       └── add features    # add features to the dataset
+│       └── merge_data      # creates the dataset file
+│       └── temp_heat_need  # adds the head feature
 │   ├── models.py           # Train regression models
-│   └── evaluation.py       # Regression metrics & comparison
+│   └── evaluation
+│       └──eda_analysis     #analysis the dataset and patterns
+│   └── model_visualisation.py
+│   └── models_evaluation.py
+│   └── models_regression.py
+├── test
+│   └── random_foreset_tuning.py 
 ├── data/
-│   └── raw
-        └──electricity.csv     # Switzerland electricity consumption data
+│   └── raw/
+│       └── climate_Swiss.txt       # Swiss meteo data
+│       └── electricity.csv         # Switzerland electricity consumption data
+│       └── GDP_quarterly.cvs       # Swiss GDP quarterly
+│       └── population_data_yearly  # population per year
 ├── results/
-│   ├── metrics.csv         # Model performance metrics
-│   └── plots/              # Forecast & comparison plots
-├── requirements.txt        # pip dependencies
+│   ├── eda                 # eda results and visualization
+│   └── figures             # Best model figure
+│   └── models              # Models predictions and scores
 └── environment.yml         # conda environment
 
+## Models Compared
+- Linear Regression
+- Lasso Regression
+- Random Forest Regressor
+- XGBoost Regressor
 
 ## Results
-- Random Forest: 0.967 accuracy
-- KNN: 0.933 accuracy
-- Logistic Regression: 0.967 accuracy
-- Winner: Tie between Random Forest and Logistic Regression
+- Best model: XGBoost
+RMSE: 107.10
+MAE : 63.80
+R2  : 0.9558
+- Winner: XGBoost best results
 
 ## Requirements
 - Python 3.11
-- scikit-learn, pandas, matplotlib, seaborn
+- scikit-learn, pandas, matplotlib, seaborn, numpy
