@@ -1,0 +1,63 @@
+=== EDA SUMMARY ===
+
+DATA INFO:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 397 entries, 0 to 396
+Data columns (total 14 columns):
+ #   Column                   Non-Null Count  Dtype         
+---  ------                   --------------  -----         
+ 0   date                     397 non-null    datetime64[ns]
+ 1   electricity_consumption  397 non-null    int64         
+ 2   temp                     397 non-null    float64       
+ 3   heat_need                397 non-null    float64       
+ 4   quarter                  397 non-null    object        
+ 5   gdp_real                 397 non-null    float64       
+ 6   population               397 non-null    float64       
+ 7   month                    397 non-null    int32         
+ 8   year                     397 non-null    int32         
+ 9   season                   397 non-null    object        
+ 10  consumption_lag_1        397 non-null    float64       
+ 11  consumption_lag_12       397 non-null    float64       
+ 12  temp_lag_1               397 non-null    float64       
+ 13  gdp_lag_1                397 non-null    float64       
+dtypes: datetime64[ns](1), float64(8), int32(2), int64(1), object(2)
+memory usage: 40.4+ KB
+
+
+MISSING VALUES:
+date                       0
+electricity_consumption    0
+temp                       0
+heat_need                  0
+quarter                    0
+gdp_real                   0
+population                 0
+month                      0
+year                       0
+season                     0
+consumption_lag_1          0
+consumption_lag_12         0
+temp_lag_1                 0
+gdp_lag_1                  0
+dtype: int64
+
+SUMMARY STATISTICS:
+                                date  ...      gdp_lag_1
+count                            397  ...     397.000000
+mean   2007-07-02 01:01:39.748110848  ...  147352.871537
+min              1991-01-01 00:00:00  ...  110359.000000
+25%              1999-04-01 00:00:00  ...  122370.000000
+50%              2007-07-01 00:00:00  ...  148391.000000
+75%              2015-10-01 00:00:00  ...  168064.000000
+max              2024-01-01 00:00:00  ...  200762.000000
+std                              NaN  ...   26155.901825
+
+[8 rows x 12 columns]
+
+
+CLUSTER MEANS:
+cluster
+0    5341.437500
+1    3723.471429
+2    4446.916279
+Name: electricity_consumption, dtype: float64
