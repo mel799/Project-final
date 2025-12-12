@@ -3,7 +3,7 @@ import pandas as pd
 def load_temperature():
     """Load and clean monthly temperature data from MeteoSwiss."""
 
-    path = "data/raw/temp/climate_Swiss.txt"
+    path = "data/raw/climate_Swiss.txt"
 
     # Read the file correctly
     df = pd.read_csv(

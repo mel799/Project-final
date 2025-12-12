@@ -4,7 +4,7 @@ def load_consumption():
     """Load and clean monthly Swiss electricity consumption (GWh)."""
 
     # Relative path to raw file
-    path = "data/raw/electricity_consumption/Consommation_F.csv"
+    path = "data/raw/Electricity_consumption.csv"
 
     # Read raw CSV
     df = pd.read_csv(path, sep=";")

@@ -4,7 +4,7 @@ def load_gdp():
     """Load and clean Swiss real GDP quarterly data."""
 
     # Relative path
-    path = "data/raw/GDP/GDP_R.csv"
+    path = "data/raw/GDP_quarterly.csv"
 
     # Load CSV
     df = pd.read_csv(path, sep=";")

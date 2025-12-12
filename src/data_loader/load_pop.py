@@ -3,7 +3,7 @@ import pandas as pd
 def load_population():
     """Load and clean yearly Swiss population data."""
 
-    path = "data/raw/Population/pop_data_y.csv"
+    path = "data/raw/population_data_yearly.csv"
 
     # Load the CSV
     df = pd.read_csv(path, sep=";")

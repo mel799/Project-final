@@ -145,7 +145,7 @@ def main():
     rf_model = train_random_forest(train, feature_cols)
     test = predict_random_forest(rf_model, test, feature_cols)
     
-    # Add predictions to TRAIN set for visualization)
+    # Add predictions to TRAIN set for visualization
     train = predict_random_forest(rf_model, train, feature_cols)
 
     
@@ -178,7 +178,10 @@ def main():
         
     test = predict_xgboost(xgb_model, test, feature_cols)
     scores["XGBoost"] = evaluate_xgboost(test)
-        
+
+    # Add predictions to TRAIN set for visualization
+    train = predict_xgboost(xgb_model, train, feature_cols)
+
      # Save predictions
         
     output_path = "results/models/xgboost_tuned_predictions.csv"
@@ -232,16 +235,26 @@ def main():
     print(f"MAE : {best_model_metrics['mae']:.2f}")
     print(f"R2  : {best_model_metrics['r2']:.4f}")
 
+    # Mapping model names to prediction column names
+    pred_col_map = {
+        "Linear Regression": "prediction_lr",
+        "Random Forest": "prediction_rf",
+        "XGBoost": "prediction_xgb",
+        "LASSO": "prediction_lasso"
+    }
+
     # Visualization of final model
     print("\n=== Creating final model visualization ===")
     
     plot_train_test_predictions(
         train_df=train,
         test_df=test,
-        pred_col="prediction_rf",  # Random Forest has the best performance
-        model_name="Random Forest Regressor",
-        output_path="results/figures/random_forest_train_test.png"
-        )
+        pred_col=pred_col_map[best_model_name],
+        model_name=best_model_name,
+        output_path=f"results/figures/{best_model_name.lower().replace(' ', '_')}_train_test.png"
+    )
+
+    print("\n=== END ===")
 
 if __name__ == "__main__":
     main()

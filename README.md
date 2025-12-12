@@ -1,24 +1,40 @@
 # Project-final
-### REasearch Question 
-Which regression performs best to forecast Switzerland’s National Electricity Consumption, Linear regression, or  Machine Learning regression, Random Forest, Lasso or  XGBoost ? 
+### Reasearch Question 
+Which regression performs best to forecast Switzerland’s National Electricity Consumption, Linear regression, or  Machine Learning regression Random Forest, Lasso or  XGBoost ? 
 
 ## Create Setup
 # Create envrironement
- 
+conda env create -f environment.yml
+conda activate electricity-forecast
+
+
 ## Usage
 python main.py
 
-Expected output: Accuracy comparison between three models.
+Expected output: 
+- Loaded data
+- Trained regression models
+- Performance comparaison using regression metrics (RMSE, MAE, R²)
+- Evaluation results of the best regression model
+- Best Model visualization
+
 ## Project Structure
 
-my-iris-comparison/
-├── main.py              # Main entry point
-├── src/                 # Source code
-│   ├── data_loader.py   # Data loading/preprocessing
-│   ├── models.py        # Model training
-│   └── evaluation.py    # Evaluation metrics
-├── results/             # Output plots and metrics
-└── environment.yml      # Dependencies
+project-final/
+├── main.py                 # Main entry point
+├── src/
+│   ├── data_loader.py      # Load & preprocess electricity data
+│   ├── models.py           # Train regression models
+│   └── evaluation.py       # Regression metrics & comparison
+├── data/
+│   └── raw
+        └──electricity.csv     # Switzerland electricity consumption data
+├── results/
+│   ├── metrics.csv         # Model performance metrics
+│   └── plots/              # Forecast & comparison plots
+├── requirements.txt        # pip dependencies
+└── environment.yml         # conda environment
+
 
 ## Results
 - Random Forest: 0.967 accuracy
