@@ -4,6 +4,13 @@ import os
 
 
 def run_eda(df):
+    """
+    Perform Exploratory Data Analysis (EDA)
+    Outputs:
+    - results/eda/summary.txt
+    - results/eda/seasonality.png
+    - results/eda/electricity_consumption_time_series.png
+    """
 
     output_dir = "results/eda"
     os.makedirs(output_dir, exist_ok=True)
@@ -29,7 +36,7 @@ def run_eda(df):
         f.write("SUMMARY STATISTICS (Electricity Consumption)\n")
         f.write(str(df["electricity_consumption"].describe()))
         f.write("\n\n")
-
+        
         # Seasonality
         df["month"] = df["date"].dt.month
         monthly_avg = df.groupby("month")["electricity_consumption"].mean()
@@ -45,14 +52,31 @@ def run_eda(df):
             "- This justifies the use of monthly features, seasonal variables,\n"
             "  heating degree days, and lag-12 features.\n\n"
         )
+    
 
-        # Correlation (numeric, no plot)
-        corr = df[
-            ["electricity_consumption", "temp", "heat_need", "gdp_real", "population"]
-        ].corr()["electricity_consumption"]
+        # --------------------------------------------------
+        # VARIANCE 
+        # --------------------------------------------------
+        numeric_cols = [
+            "electricity_consumption",
+            "temp",
+            "heat_need",
+            "gdp_real",
+            "population"
+        ]
 
-        f.write("CORRELATION WITH ELECTRICITY CONSUMPTION\n")
-        f.write(str(corr))
+        f.write("VARIANCE OF NUMERIC VARIABLES\n")
+        f.write(str(df[numeric_cols].var()))
+        f.write("\n\n")
+
+        # --------------------------------------------------
+        # CORRELATION MATRIX
+        # --------------------------------------------------
+        f.write("CORRELATION MATRIX\n")
+        corr_matrix = df[numeric_cols].corr()
+        f.write(str(corr_matrix))
+        f.write("\n\n")
+
 
     # ==================================================
     # PLOT: SEASONALITY

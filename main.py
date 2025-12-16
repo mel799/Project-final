@@ -19,6 +19,8 @@ from src.data_preprocessing.merge_data import merge_all
 # EDA Analysis
 from src.evaluation.eda_analysis import run_eda
 
+SAVE_PREDICTIONS = False
+
 # Models
 from src.models_regression import (
     naive_last_month, naive_last_year,
@@ -113,8 +115,9 @@ def main():
         "date", "electricity_consumption",
         "naive_last_month", "naive_last_year"
     ]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
-    print(f"Baseline predictions saved to: {output_path}")
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"Baseline predictions saved to: {output_path}")
 
     # --- LINEAR REGRESSION ---------------------------------------------------
     print("\n=== Training Linear Regression ===")
@@ -134,11 +137,12 @@ def main():
     scores["Linear Regression"] = evaluate_linear_regression(test)
 
     # Save Linear regression predictions
-    print("\n=== Saving Linear Regression Predictions ===")
     output_path = "results/models/linear_regression_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_lr"]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
-    print(f"Linear Regression predictions saved to: {output_path}")
+    
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"Linear Regression predictions saved to: {output_path}")
 
     # --- RANDOM FOREST REGRESSION ----------------------------------------
     print("\n=== Training Random Forest Regression ===")
@@ -153,8 +157,10 @@ def main():
     # Save RF predictions
     output_path = "results/models/random_forest_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_rf"]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
-    print(f"Random Forest predictions saved to: {output_path}")
+    
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"Random Forest predictions saved to: {output_path}")
 
     # --- XGBOOST WITH GRID SEARCH ----------------------------------------------
     
@@ -186,9 +192,10 @@ def main():
         
     output_path = "results/models/xgboost_tuned_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_xgb"]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
-        
-    print(f"Tuned XGBoost predictions saved to: {output_path}")
+    
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"Tuned XGBoost predictions saved to: {output_path}")
 
     # --- LASSO REGRESSION ---------------------------------------------------------
     print("\n=== Training LASSO Regression ===")
@@ -199,9 +206,10 @@ def main():
     # Save predictions
     output_path = "results/models/lasso_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_lasso"]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
     
-    print(f"LASSO predictions saved to: {output_path}")
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"LASSO predictions saved to: {output_path}")
 
     # --- LASSO REGRESSION (GRID SEARCH) ------------------------------------------
     print("\n=== Tuning LASSO Regression (GridSearchCV) ===")
@@ -213,9 +221,10 @@ def main():
     # Save tuned predictions
     output_path = "results/models/lasso_tuned_predictions.csv"
     cols_to_save = ["date", "electricity_consumption", "prediction_lasso"]
-    test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
     
-    print(f"Tuned LASSO predictions saved to: {output_path}")
+    if SAVE_PREDICTIONS:
+        test.dropna(subset=cols_to_save).to_csv(output_path, index=False)
+        print(f"Tuned LASSO predictions saved to: {output_path}")
     
     # --- Save all models scores ---------------------------------------------
     print("\n=== Saving Model Score Summary ===")
@@ -245,7 +254,8 @@ def main():
 
     # Visualization of final model
     print("\n=== Creating final model visualization ===")
-    
+
+
     plot_train_test_predictions(
         train_df=train,
         test_df=test,
