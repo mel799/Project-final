@@ -2,8 +2,7 @@
 ### Reasearch Question 
 Which regression performs best to forecast Switzerland’s National Electricity Consumption, Linear regression, or  Machine Learning regression Random Forest, Lasso or  XGBoost ? 
 
-## Create Setup
-## Create envrironement
+## Create Setup and envrironement
 # Steps to Run the Project
 
 In a new directory of your choice, follow these steps:
