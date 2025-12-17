@@ -13,6 +13,9 @@ from sklearn.model_selection import GridSearchCV
 from xgboost import XGBRegressor
 from sklearn.linear_model import Lasso
 from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import TimeSeriesSplit
 
 # Naive Baseline Models
 
@@ -214,19 +217,25 @@ def train_lasso_gridsearch(train_df, feature_cols):
 
     y_train = train_df["electricity_consumption"]
     X_train = train_df[feature_cols]
+    
+    
+    pipe = Pipeline([
+        ("scaler", StandardScaler()),
+        ("lasso", Lasso(max_iter=20000))
+    ])
 
-    # Range of alpha values to test
     param_grid = {
-        "alpha": [0.0001, 0.001, 0.01, 0.1, 1, 5, 10]
+        # log-scale search is usually better than a short manual list
+        "lasso__alpha": np.logspace(-5, 1, 60)  # 1e-5 ... 10
     }
 
-    lasso = Lasso(max_iter=5000)
+    tscv = TimeSeriesSplit(n_splits=5)
 
     grid = GridSearchCV(
-        estimator=lasso,
+        estimator=pipe,
         param_grid=param_grid,
-        scoring="neg_mean_squared_error",  # MSE (lower is better)
-        cv=5,
+        scoring="neg_root_mean_squared_error",  # directly RMSE
+        cv=tscv,
         n_jobs=-1
     )
 
@@ -235,7 +244,7 @@ def train_lasso_gridsearch(train_df, feature_cols):
     best_model = grid.best_estimator_
 
     print("\n=== LASSO GRID SEARCH RESULTS ===")
-    print("Best alpha:", grid.best_params_["alpha"])
+    print("Best alpha:", grid.best_params_["lasso__alpha"])
     print("Best CV RMSE:", (-grid.best_score_) ** 0.5)
 
     return best_model, grid

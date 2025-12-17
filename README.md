@@ -29,7 +29,8 @@ pproject-final/
 ├── src/
 │   ├── data_loader    # Load & preprocess electricity data
 │       └──GDP_monthly.py   # transform data to monthly
-│       └──load_gdp         # loan and clean the GDP data
+│       └──load_gdp.py         # loan and clean the GDP data
+│       └── load_pop.py
 │       └── ...
 │   ├── data_preprocessing
 │       └── add features    # add features to the dataset
@@ -54,6 +55,9 @@ pproject-final/
 │   └── figures             # Best model figure
 │   └── models              # Models predictions and scores
 └── environment.yml         # conda environment
+└── project report.md
+└── PROSPOSAL.md            #project proposal november
+
 
 ## Models Compared
 - Linear Regression
@@ -70,4 +74,4 @@ R2  : 0.9558
 
 ## Requirements
 - Python 3.11
-- scikit-learn, pandas, matplotlib, seaborn, numpy
+- scikit-learn, pandas, matplotlib, seaborn, numpy, jupyter, xgboost, 

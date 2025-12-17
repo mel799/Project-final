@@ -43,6 +43,8 @@ from src.models_evaluation import (
 
 #Vizualization
 from src.model_visualization import plot_train_test_predictions
+from src.model_visualization import save_last_year_comparison_png
+
 
 def main():
     #------------------------------------------------------------------------------
@@ -131,6 +133,9 @@ def main():
 
     # Train + Predict
     lr_model = train_linear_regression(train, feature_cols)
+
+    #Predict on TRAIN set for visualization
+    train = predict_linear_regression(lr_model, train, feature_cols)
     test = predict_linear_regression(lr_model, test, feature_cols)
 
     # Evaluate
@@ -263,7 +268,37 @@ def main():
         model_name=best_model_name,
         output_path=f"results/figures/{best_model_name.lower().replace(' ', '_')}_train_test.png"
     )
+    #-------------
+    # Visualization linear regression
+    print("\n=== Creating Linear Regression visualization ===")
+    plot_train_test_predictions(
+        train_df=train,
+        test_df=test,
+        pred_col="prediction_lr",
+        model_name="Linear Regression",
+        output_path="results/figures/linear_regression_train_test.png"
+    )
+    
+    #---------------------
+    
+    prediction_cols = {
+        "Linear Regression": "prediction_lr",
+        "Random Forest": "prediction_rf",
+        "XGBoost": "prediction_xgb",
+        "LASSO": "prediction_lasso"
+    }
+    
+    print("\n=== Creating 2023 model comparison table ===")
+    
+    save_last_year_comparison_png(
+        test_df=test,
+        y_col="electricity_consumption",
+        prediction_cols=prediction_cols,
+        year=2023,
+        output_path="results/figures/model_comparison_2023.png"
+    )
 
+    #--------------
     print("\n=== END ===")
 
 if __name__ == "__main__":

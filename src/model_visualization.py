@@ -94,4 +94,60 @@ def plot_train_test_predictions(
     plt.close()
 
     print(f"Saved plot to: {output_path}")
+#------------------------------
 
+
+def save_last_year_comparison_png(
+    test_df,
+    y_col="electricity_consumption",
+    prediction_cols=None,
+    year=2023,
+    output_path="results/figures/last_year_comparison_2023.png"
+):
+    """
+    Create a PNG table comparing actual vs predicted electricity consumption
+    for the last year of the dataset (default = 2023).
+    """
+
+    if prediction_cols is None:
+        raise ValueError("prediction_cols dictionary must be provided")
+
+    # Filter last year
+    df_year = test_df[test_df["date"].dt.year == year]
+
+    if df_year.empty:
+        raise ValueError(f"No data found for year {year}")
+
+    # Prepare table data (annual mean)
+    rows = []
+    rows.append(["Actual Value", f"{df_year[y_col].mean():.2f}"])
+
+    for model_name, col in prediction_cols.items():
+        rows.append([model_name, f"{df_year[col].mean():.2f}"])
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=(7, 2.5 + 0.4 * len(rows)))
+    ax.axis("off")
+
+    table = ax.table(
+        cellText=rows,
+        colLabels=["Model", "Electricity Consumption (GWh)"],
+        cellLoc="center",
+        loc="center"
+    )
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 1.4)
+
+    ax.set_title(
+        f"Electricity Consumption – Model Comparison ({year})",
+        fontsize=12,
+        pad=15
+    )
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    plt.savefig(output_path, bbox_inches="tight", dpi=300)
+    plt.close()
+
+    print(f"Saved comparison table to: {output_path}")
