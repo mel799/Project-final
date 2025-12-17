@@ -91,7 +91,6 @@ Project-final/
 RMSE: 107.10
 MAE : 63.80
 R2  : 0.9558
-- Winner: XGBoost best results
 
 ## Requirements
 - Python 3.11
