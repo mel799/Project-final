@@ -20,7 +20,7 @@ integration of renewable energies.
 
 ### Planned approach and technologies:
 
-Collect Data: National electricity consumption, Weather data ((temperature, humidity,
+Collect Data: National electricity consumption, Weather data (temperature, humidity,
 precipitation), Population and socio-economic data from the Swiss Federal Statistical
 Office (total population, GDP). Observe patterns, trends, variance and covariance in the
 variables depending on this, creates adapted features.
