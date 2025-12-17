@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def make_gdp_monthly():
     """Convert quarterly GDP data to monthly using forward fill."""
@@ -20,6 +21,7 @@ def make_gdp_monthly():
 
     # Save the monthly version
     output_path = "data/clean/SwissGDP_monthly.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_monthly.to_csv(output_path, index=False)
 
     print(f"Saved monthly GDP: {output_path}")

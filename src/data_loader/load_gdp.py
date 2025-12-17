@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def load_gdp():
     """Load and clean Swiss real GDP quarterly data."""
@@ -26,6 +27,7 @@ def load_gdp():
 
     # Save cleaned CSV
     output_path = "data/clean/SwissGDP.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_clean.to_csv(output_path, index=False)
 
     print(f"Saved GDP data → {output_path}")

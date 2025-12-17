@@ -9,6 +9,5 @@ dependencies:
   - seaborn
   - xgboost
   - numpy
-  - jupyter
-
-
+  - pyyaml
+  

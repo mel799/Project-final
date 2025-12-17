@@ -18,6 +18,7 @@ def run_eda(df):
     # ==================================================
     # TEXT SUMMARY
     # ==================================================
+    
     with open(f"{output_dir}/summary.txt", "w") as f:
 
         f.write("=== EXPLORATORY DATA ANALYSIS SUMMARY ===\n\n")

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def make_population_monthly():
     """Convert yearly population data to monthly."""
@@ -19,6 +20,7 @@ def make_population_monthly():
 
     # Save monthly file
     output_path = "data/clean/population_monthly.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_monthly.to_csv(output_path, index=False)
 
     print(f"Saved monthly population {output_path}")

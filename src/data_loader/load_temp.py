@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def load_temperature():
     """Load and clean monthly temperature data from MeteoSwiss."""
@@ -42,6 +43,7 @@ def load_temperature():
 
     # Save cleaned file
     output_path = "data/clean/temperature_monthly.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_clean.to_csv(output_path, index=False)
 
     print(f"Saved temperature data : {output_path}")

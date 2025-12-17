@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def add_features(df):
     """Add time-based, seasonal, and lag features to the merged dataset."""
@@ -32,6 +33,7 @@ def add_features(df):
 
     # Save engineered dataset
     output_path = "data/dataset/master_dataset_fe.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)
 
     print(f"Feature engineering completed  {output_path}")

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def load_consumption():
     """Load and clean monthly Swiss electricity consumption (GWh)."""
@@ -31,6 +32,7 @@ def load_consumption():
 
     # Save cleaned version
     output_path = "data/clean/swiss_consumption_monthly.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_clean.to_csv(output_path, index=False)
 
     print(f"Saved electricity consumption data → {output_path}")

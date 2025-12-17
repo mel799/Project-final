@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def load_population():
     """Load and clean yearly Swiss population data."""
@@ -22,6 +23,7 @@ def load_population():
 
     # Save cleaned version (optional but useful)
     output_path = "data/clean/population_yearly.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_yearly.to_csv(output_path, index=False)
 
     print(f"Saved population data → {output_path}")

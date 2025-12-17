@@ -4,8 +4,12 @@ Which regression performs best to forecast Switzerland’s National Electricity 
 
 ## Create Setup
 # Create envrironement
+
+
 conda env create -f environment.yml
 conda activate electricity-forecast
+
+
 
 
 ## Usage
@@ -55,8 +59,12 @@ pproject-final/
 │   └── figures             # Best model figure
 │   └── models              # Models predictions and scores
 └── environment.yml         # conda environment
-└── project report.md
-└── PROSPOSAL.md            #project proposal november
+└── PROSPOSAL.md            # project proposal november
+├── Project_report.tex      # Final report (LaTeX)
+├── project_report.pdf     # Final report (pdf)
+├── PROPOSAL.md             # Project proposal
+└── README.md               # Project documentation
+
 
 
 ## Models Compared

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def merge_all(df_temp, df_pop, df_gdp, df_elec):
     """Merge temperature, population, GDP, and electricity consumption into one dataset."""
@@ -22,6 +23,7 @@ def merge_all(df_temp, df_pop, df_gdp, df_elec):
 
     # Save merged dataset
     output_path = "data/dataset/master_dataset.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_final.to_csv(output_path, index=False)
 
     print(f"Master dataset saved  {output_path}")
