@@ -51,7 +51,7 @@ Expected output:
 Project-final/
 ├── main.py                 # Main entry point
 ├── src/
-│   ├── data_loader         # Load & preprocess electricity data
+│   ├── data_loader         # Load data
 │       └──GDP_monthly.py   # transform data to monthly
 │       └──load_gdp.py       # loand and clean the GDP data
 │       └── load_pop.py
