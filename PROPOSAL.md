@@ -1,13 +1,12 @@
 
-#Project Proposal
-###Title: Forecasting Switzerland’s National Electricity Consumption
-###Category: Data Science / Predictive Modeling
+# Project proposal
 
-##Reasearch Question: Which regression performs best to forecast Switzerland’s National
-Electricity Consumption, Linear regression, or Machine Learning regression, Random Forest,
-Lasso or XGBoost?
+### Title: Forecasting Switzerland’s National Electricity Consumption
+### Category: Data Science / Predictive Modeling
 
-###Motivation:
+## Reasearch Question: Which regression model performs best to forecast Switzerland’s National Electricity Consumption, Linear regression, or Machine Learning regression; Random Forest, Lasso or XGBoost?
+
+### Motivation:
 
 Electricity is an essential resource for our society, but it remains limited and demand continues
 to grow due to population increase and economic development. In the context of global warming,
@@ -19,7 +18,7 @@ forecast, these data provide actionable information for policymakers, electricit
 and researchers to optimize energy efficiency, anticipate consumption peaks, and facilitate the
 integration of renewable energies.
 
-###Planned approach and technologies:
+### Planned approach and technologies:
 
 Collect Data: National electricity consumption, Weather data ((temperature, humidity,
 precipitation), Population and socio-economic data from the Swiss Federal Statistical
@@ -38,18 +37,17 @@ Evaluate the Regressions with RAE; RSME; R^
 Optimize and Visualize: Make code run faster using tools like Numba. Illustrate results
 with graphics
 
-###Expected challenges and how you’ll address them:
+### Expected challenges and how you’ll address them:
 
 Data completeness, some historical consumption or weather data may have gaps.
 
-###Solution: 
+### Solution: 
 
 Identify missing data, handle missing values, check the impact.
 
-###Success criteria (how will you know it’s working?)
+### Success criteria (how will you know it’s working?)
 
-Data is available,
-time-series predictability (Electricity consumption is usually somewhat regular (daily, weekly,
+Data is available, time-series predictability,Electricity consumption is usually somewhat regular (daily, weekly,
 seasonal cycles).
 
 ###Stretch goals (if time permits)
