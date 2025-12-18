@@ -2,10 +2,10 @@ import os
 import joblib
 
 #Data Loading
-from src.data_loader.load_temp import load_temperature
-from src.data_loader.load_pop import load_population
+from src.data_loader.load_temperature import load_temperature
+from src.data_loader.load_population import load_population
 from src.data_loader.load_gdp import load_gdp
-from src.data_loader.load_elec_consumption import load_consumption
+from src.data_loader.load_electricity_consumption import load_electricity_consumption
 from src.data_loader.pop_yearly_monthly import make_population_monthly
 from src.data_loader.GDP_monthly import make_gdp_monthly
 
@@ -66,7 +66,7 @@ def main():
     gdp_monthly = make_gdp_monthly()
 
     print("=== Loading electricity consumption data ===")
-    cons_df = load_consumption()
+    cons_df = load_electricity_consumption()
 
     print("=== Merging all datasets ===")
     merged_df = merge_all(temp_df, pop_monthly, gdp_monthly, cons_df)

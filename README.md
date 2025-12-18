@@ -54,7 +54,7 @@ Project-final/
 │   ├── data_loader         # Load data
 │       └──GDP_monthly.py   # transform data to monthly
 │       └──load_gdp.py       # loand and clean the GDP data
-│       └── load_pop.py
+│       └── load_population.py
 │       └── ...
 │   ├── data_preprocessing  
 │       └── add features    # add features to the dataset

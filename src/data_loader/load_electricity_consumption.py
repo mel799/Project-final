@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-def load_consumption():
+def load_electricity_consumption():
     """Load and clean monthly Swiss electricity consumption (GWh)."""
 
     # Relative path to raw file
