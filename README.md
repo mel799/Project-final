@@ -1,6 +1,8 @@
 # Project-final
 ### Reasearch Question 
-Which regression performs best to forecast Switzerland’s National Electricity Consumption, Linear regression, or  Machine Learning regression Random Forest, Lasso or  XGBoost ? 
+Which regression approach provides the most accurate forecasts of
+Switzerland’s national electricity consumption: Linear regression or
+Machine Learning models such as Lasso, Random Forest, and XGBoost?
 
 ## Create Setup and envrironement
 # Steps to Run the Project
