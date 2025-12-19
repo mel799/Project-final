@@ -59,7 +59,7 @@ Project-final/
 │       └── load_population.py
 │       └── ...
 │   ├── data_preprocessing  
-│       └── add features    # add features to the dataset
+│       └── add_features    # add features to the dataset
 │       └── merge_data      # creates the dataset file
 │       └── temp_heat_need  # adds the head feature
 │   └── evaluation

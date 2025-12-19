@@ -3,6 +3,7 @@
 \documentclass[11pt,a4paper]{article}
 
 % Packages
+\usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
@@ -58,8 +59,10 @@
 \title{%
     \Large \textbf{Advanced Programming 2025} \\
     \vspace{0.5cm}
-    \LARGE \textbf{Forecasting Swiss Electricity Consumption} \\
-    \vspace{0.3cm}
+     \LARGE \textbf{Forecasting Switzerland’s National Electricity Consumption} \\
+    \vspace{0.4cm}
+    \large \textbf {Which regression approach provides the most accurate forecasts of Switzerland’s national electricity consumption: Linear regression or Machine Learning models namely Lasso, Random Forest, and XGBoost?} \\
+    \vspace{0.6cm}
     \large Final Project Report
 }
 \author{
@@ -76,17 +79,12 @@
 
 \begin{abstract}
 \noindent
-Provide a concise summary (150-200 words) of your project. Include:
-\begin{itemize}
-    \item The problem you're solving
-    \item Your approach/methodology
-    \item Key results/findings
-    \item Main contributions
-\end{itemize}
+Electricity demand represents a fundamental challenge for energy resource planning in Switzerland, particularly in order to anticipate future needs and support the efficient integration of renewable energy sources. This project aims to model and forecast monthly electricity consumption in Switzerland using socio-economic and climatic data. Three machine learning algorithms are employed to train forecasting models, including Lasso regression, Random Forest, and XGBoost. The models rely on Swiss data on temperature, population, and gross domestic product covering the period from 1990 to 2024. The dataset is divided into a training set representing 70\% of the observations (1990--2018) and a test set representing 30\% (2019--2024), following a chronological split. Model performance is evaluated using standard metrics: Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and the coefficient of determination (R\textsuperscript{2}). The selected variables exhibit strong predictive power, as they are highly correlated with electricity consumption, which displays pronounced seasonality. This justifies the inclusion of temporal and lagged features such as \textit{season}, \textit{consumption\_lag\_1}, \textit{consumption\_lag\_12}, \textit{temp\_lag\_1}, and \textit{gdp\_lag\_1}. Among the evaluated models, XGBoost achieves the best performance, with an RMSE of 107.10, an MAE of 63.80, and an R\textsuperscript{2} of 0.9558. This project contribution is a reproducible framework for forecasting Swiss electricity consumption, using official Swiss data and that integrates temporal features, and provides an empirical comparison of regression and machine learning models.
+
 \end{abstract}
 
 \vspace{0.5cm}
-\noindent\textbf{Keywords:} data science, Python, machine learning, [add your keywords]
+\noindent\textbf{Keywords:} Data science, Python, Machine Learning, Electricity demand forecasting, Switzerland, XGBoost, Random Forest Regression, Lasso Regression
 
 \newpage
 \tableofcontents
@@ -96,176 +94,339 @@ Provide a concise summary (150-200 words) of your project. Include:
 
 \section{Introduction}
 \label{sec:introduction}
+Electricity is an essential resource for our society, but it remains limited and demand continues to grow due to population increase and economic development. In the context of global warming, it is becoming crucial to better understand and anticipate energy needs in order to promote the transition to renewable resources and ensure the stability of the electricity grid. This project aims to develop a predictive model capable of estimating electricity consumption in Switzerland using variables such as weather, population, and seasonal effects. By focusing on a national-scale forecast, these data provide actionable information for policymakers, electricity grid operators, and researchers to optimize energy efficiency, anticipate consumption peaks, and facilitate the integration of renewable energies.\\
 
-Introduce your project and its context. This section should include:
-\begin{itemize}
-    \item Background and motivation
-    \item Problem statement
-    \item Objectives and goals
-    \item Report organization
-\end{itemize}
+The problem addressed in this project is to accurately forecast the electricity demand at the national level in Switzerland. Electricity demand exhibits strong seasonal patterns and is influenced by multiple factors, including weather conditions, demographic trends, and macroeconomic activity. Understanding how these variables interact is essential for anticipating consumption peaks, and ensuring efficient energy allocation. \\
 
-\section{Literature Review / Related Work}
+The objective of this project is to develop and evaluate predictive models capable of forecasting monthly electricity consumption in Switzerland using the explanatory variables. To achieve this goal, several regression and Machine Learning models are implemented and compared, with particular attention given to feature engineering strategies that capture seasonality and temporal dependence. Model performance is assessed using standard evaluation metrics to identify the most accurate and robust forecasting approach.\\
+
+The next steps of this report are organized as follows. Section 2 presents a review of the relevant literature on electricity demand forecasting. Section 3 describes the methodology, and modeling approach. Section 4 reports the results obtained from the different models. Finally, Section 5 and 6 concludes and discusses the main findings as well as potential directions for future research.
+
+\section{Literature Review}
 \label{sec:literature}
+Numerous studies have been conducted to predict electricity consumption and demand using different explanatory variables (such as, oil price, imports and exports, GDP, inflation percentage, temperature) and forecasting methods. However, despite the vast amount of existing work, there is no single model that can universally predict electricity consumption, as performance depends heavily on the geographical context, time horizon, and variables considered.\\
 
-Discuss relevant prior work, existing solutions, or theoretical background. For data science projects, this might include:
-\begin{itemize}
-    \item Previous approaches to similar problems
-    \item Relevant algorithms or methodologies
-    \item Datasets used in related studies
-\end{itemize}
+Bessec and Fouquau (2008) analyze the relationship between electricity consumption and temperature in several European countries and highlight the existence of a non-linear link between these two variables. The authors show that electricity consumption reacts differently depending on temperature levels, with a significant increase in demand during periods of extreme cold or heat. These results highlight the limitations of traditional linear models and underscore the need to incorporate seasonal and nonlinear effects into electricity consumption forecasting models.\\
+
+Furthermore, Li, J. (2023) compares several forecasting approaches, ranging from multiple linear regression to machine learning methods. The results also indicate that nonlinear models achieve better predictive performance than linear approaches. This study thus highlights the relevance of machine learning techniques for improving the accuracy of energy demand forecasts.
 
 \section{Methodology}
 \label{sec:methodology}
 
 \subsection{Data Description}
-Describe your dataset(s):
-\begin{itemize}
-    \item Source and collection method
-    \item Size and characteristics
-    \item Features/variables
-    \item Data quality issues
-\end{itemize}
+The data used in this project come from official Swiss sources and cover the period from 1991 to 2024. The target variable, electricity consumption, is provided by the Office of Swiss Federal Office of Energy (SFOE 2024). It is measured at a monthly frequency and represents total national electricity consumption. The explanatory variables include electricity consumption, average monthly temperature, total population, and gross domestic product. Data were obtained from the official Swiss administrative sources (admin.ch, 2024). Climatic data, average monthly temperature, are used to capture the influence of weather conditions on electricity demand. The socioeconomic variables consist of total population and GDP, which reflect demographic evolution and economic activity in Switzerland. As population and GDP data are originally available at annual and quarterly frequencies, respectively, they are transformed into monthly series to ensure consistency with the other variables.\\
+
+The data loading and formatting processes are implemented in the \texttt{src/data\_loader} directory. Population and GDP data are converted to monthly frequency using the scripts \texttt{pop\_yearly\_monthly.py} and \texttt{GDP\_monthly.py}. All correctly formatted datasets are stored in the \texttt{data/clean} directory.\\
+
+The original data files are collected in various formats, including Excel, TXT, and CSV. All Excel files are converted into CSV format to ensure homogeneous data processing. Regarding data quality, the institutional sources used in this study provide a high level of reliability. No missing values are present in the final dataset.
 
 \subsection{Approach}
-Detail your technical approach:
-\begin{itemize}
-    \item Algorithms used
-    \item Data preprocessing steps
-    \item Model architecture (if applicable)
-    \item Evaluation metrics
-\end{itemize}
+
+After loading and cleaning the data, it was subsequently preprocessed.
+The preprocessing stage involves several steps implemented in the \texttt{src/data\_preprocessing} directory, which contains multiple Python scripts used to construct the final dataset. 
+
+These steps include creating temporal and climate variables (\texttt{temp\_heat\_need.py}), and generating lagged features in order to account for the temporal dependence of electricity consumption (\texttt{add\_features.py}) and finally merging datasets (\texttt{merge\_data.py} ). These additional features are introduced because the exploratory data analysis (\texttt{eda\_analysis.py}) revealed a strong seasonal pattern in electricity consumption. The dataset is then divided into a training set (70\%) and a test set (30\%) using a chronological split, in order to preserve the temporal structure of the data.\\
+
+The methodological approach is based a comparative analysis of several forecasting models to evaluate their ability to predict monthly electricity consumption in Switzerland. First, baseline models are constructed as benchmarks, including naïve approaches and a linear regression model. The naïve baseline models predict future consumption using either the value from the previous month or the value from the same period in the previous year. Linear regression is included as a simple parametric benchmark capturing average linear relationships between electricity consumption and explanatory variables. These baseline models serve as reference points to assess the added value of more advanced machine learning approaches.\\
+
+Subsequently, more advanced models are implemented, which are LASSO regression, Random Forest regression, and XGBoost. While the baseline models provide interpretable reference performances, the machine learning models are expected to better capture nonlinear relationships and seasonal effects present in electricity consumption data.\\
+
+The performance of the model is evaluated using standard forecasting metrics: root mean Squared error (RMSE), Mean Absolute Error (MAE), and coefficient of determination (R²). These metrics allow for a consistent comparison across models and help identify the most accurate and robust approach for forecasting electricity consumption.
 
 \subsection{Implementation}
-Discuss the implementation details:
-\begin{itemize}
-    \item Programming languages and libraries
-    \item System architecture
-    \item Key code components
-\end{itemize}
+
+The project is implemented using the Python programming language. Core libraries used throughout the project include \texttt{pandas} and \texttt{NumPy} for data manipulation, \texttt{scikit-learn} for regression models, preprocessing, and evaluation metrics, and \texttt{XGBoost} for gradient boosting models. Additional libraries such as \texttt{joblib} are used for model persistence, and \texttt{matplotlib} is employed for exploratory data analysis and result visualization. Model selection and hyperparameter tuning were performed using \texttt{GridSearchCV}, with time-series-aware cross-validation where appropriate. The system architecture follows a modular and reproducible design, organized around distinct components responsible for data handling, preprocessing, modeling, evaluation, and visualization.\\
+
+Data collection and formatting are handled in the \texttt{src/data\_loader} directory. In this step, raw data files are transformed into CSV formats, column names and time periods are harmonized, and the processed files are stored in the \texttt{data/clean} directory. Feature engineering and preprocessing steps are implemented in the \texttt{src/data\_preprocessing} directory. This component ensures the transformation of the cleaned data into model ready inputs by creating temporal variables, seasonal indicators, lagged features, and domain specific variables (such as the heating needs variable), then it merges the data to obtain the final dataset. By separating preprocessing from data loading, the architecture ensures a clear distinction between raw data handling and the construction of data ready for modeling.\\
+
+The training, evaluation, and visualization of the models are organized as follows. 
+Model training, hyperparameter tuning, and prediction are implemented in the \texttt{models\_regression.py} module. This file contains the functions responsible for training and testing each regression model, including naive models, linear regression, LASSO, Random Forest, and XGBoost. For machine learning models, hyperparameters are optimized using \texttt{GridSearchCV} in order to improve predictive performance. \\
+Model evaluation is handled in the \texttt{models\_evaluation.py} module. This component computes the evaluation metrics introduced earlier, namely Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and the coefficient of determination (R²). The evaluation results for all models are systematically recorded and saved in the file \texttt{results/models/model\_scores.txt}, ensuring traceability and comparability across experiments.\\
+Finally, the file \texttt{model\_visualisation.py} generate a graphical representation of the best model performance based on the evaluation metrics and as a comparaison the same graphic of the linear model. It compares predicted and observed electricity consumption for both the training and test sets, supporting the interpretation of results and the comparative analysis of forecasting performance. This file also generates a comparative table of the models predictions of the electricity consumption (GWh) for the year 2023 and the actual value.\\
+
+The following code snippet illustrates the data loading and cleaning process, which constitutes a key code component. Other data loading functions are implemented using a similar structure and logic.\\
 
 Example code snippet:
-\begin{lstlisting}[caption={Example data preprocessing function}]
-def preprocess_data(df):
+
+\begin{lstlisting}[caption={Example data loading and cleaning function}]
+def load_electricity_consumption():
     """
-    Preprocess the input dataframe.
-    
-    Args:
-        df: Input pandas DataFrame
+    Load and clean monthly Swiss electricity consumption data.
     
     Returns:
-        Preprocessed DataFrame
+        df_clean: pandas DataFrame containing cleaned electricity consumption data
     """
-    # Remove missing values
-    df = df.dropna()
-    
-    # Normalize numerical features
-    scaler = StandardScaler()
-    df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
-    
-    return df
+    # Path to raw data file
+    path = "data/raw/Electricity_consumption.csv"
+
+    # Read raw CSV file
+    df = pd.read_csv(path, sep=";")
+
+    # First row contains column names
+    df.columns = df.iloc[0]
+    df = df[1:].reset_index(drop=True)
+
+    # Rename consumption column
+    df = df.rename(columns={
+        " GWH": "electricity_consumption",
+        "GWH": "electricity_consumption"
+    })
+
+    # Convert date column to datetime format
+    df["date"] = pd.to_datetime(df["date"], format="%m-%Y")
+
+    # Convert consumption values to numeric
+    df["electricity_consumption"] = pd.to_numeric(
+        df["electricity_consumption"], errors="coerce"
+    )
+
+    # Sort observations by date
+    df_clean = df.sort_values("date")
+
+    # Save cleaned dataset
+    output_path = "data/clean/swiss_consumption_monthly.csv"
+    df_clean.to_csv(output_path, index=False)
+
+    return df_clean
 \end{lstlisting}
 
 \section{Results}
 \label{sec:results}
 
-Present your findings with appropriate visualizations and tables.
-
 \subsection{Experimental Setup}
-Describe your experimental environment:
-\begin{itemize}
-    \item Hardware specifications
-    \item Software versions
-    \item Hyperparameters
-\end{itemize}
+
+The different model regressions were implemented as follows.
+A standard linear regression model was used as a baseline parametric approach, providing a simple and interpretable benchmark against which more advanced models could be compared. LASSO regression was implemented to introduce regularization and automatic feature selection. The tuning procedure consisted of selecting the optimal value of the regularization parameter $\alpha$, using a pipeline that combines feature standardization and time series cross-validation. For the Random Forest regression, an independent tuning procedure was carried out using a dedicated script (\texttt{rf\_tuning.py}). Models were evaluated using different numbers of trees (50, 100, 200, 300, 500, and 800 estimators). Based on this analysis, a configuration with 300 trees was selected, as it provided the best trade off between predictive accuracy and computational efficiency. Finally, XGBoost models were trained using both fixed hyperparameters and a tuned configuration obtained through grid search. A parameter grid covering multiple values for the number of estimators, learning rate, tree depth, and subsampling ratios was defined. The \texttt{GridSearchCV} procedure evaluated 243 distinct hyperparameter combinations using 3-fold cross-validation, resulting in a total of 729 model training runs. This extensive search strategy ensures a robust estimation of model performance.
+
 
 \subsection{Performance Evaluation}
 
 \begin{table}[H]
 \centering
-\caption{Model Performance Metrics}
-\label{tab:performance}
+\caption{Performance comparison of all forecasting models}
+\label{tab:performance_all}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} \\
+\textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
 \hline
-Baseline & 0.75 & 0.72 & 0.78 \\
-Your Model & 0.85 & 0.83 & 0.87 \\
+Naive (Last Month) & 366.28 & 278.02 & 0.4834 \\
+Naive (Last Year)  & 197.70 & 152.22 & 0.8495 \\
+Linear Regression  & 194.60 & 149.89 & 0.8542 \\
+LASSO Regression   & 194.65 & 149.96 & 0.8541 \\
+LASSO (Tuned)      & 196.29 & 152.25 & 0.8516 \\
+Random Forest      & 142.32 & 105.66 & 0.9220 \\
+XGBoost            & \textbf{107.10} & \textbf{63.80} & \textbf{0.9558} \\
 \hline
 \end{tabular}
 \end{table}
 
 \subsection{Visualizations}
 
-Include relevant plots and figures. For example:
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{graph_prediction_XGBoost.png}
+\caption{XGBoost regression: actual value vs prediction test and train }
+\label{fig:results}
+\end{figure}
+
 
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.8\textwidth]{figures/results_plot.png}
-\caption{Your results visualization}
+\includegraphics[width=0.8\textwidth]{seasonality.png}
+\caption{Seasonnality of electricity consumption}
 \label{fig:results}
 \end{figure}
+
 
 \section{Discussion}
 \label{sec:discussion}
 
-Analyze and interpret your results:
-\begin{itemize}
-    \item What worked well?
-    \item What were the challenges?
-    \item How do your results compare to expectations?
-    \item Limitations of your approach
-\end{itemize}
+\subsection{Interpretation of Results}
+
+The naive baseline models provide a useful benchmark for evaluating more advanced forecasting approaches. As expected, the naive last month model performs poorly, since electricity consumption in Switzerland exhibits strong annual seasonality. Relying solely on the previous month’s value fails to capture this yearly pattern. In contrast, the naive last year model achieves relatively strong results despite its simplicity, highlighting the persistence and regularity of seasonal cycles in Swiss electricity consumption (see Figure~2).\\
+
+The linear regression model yields performance levels close to those of the naive last year baseline. While this model benefits from the inclusion of multiple explanatory variables, its predictive capacity remains limited by the assumption of linear relationships between estimators and electricity consumption.\\
+
+LASSO regression was introduced to combine prediction and feature selection through L1 regularization. In practice, the LASSO model does not outperform standard linear regression and remains clearly inferior to the Random Forest and XGBoost models. The tuned version of LASSO, obtained using GridSearchCV, produces results very similar to the untuned model and does not lead to meaningful improvements. This outcome can be explained by the fact that LASSO penalizes coefficients associated with weaker or redundant predictors, potentially setting them to zero. In this application, however, most engineered features such as lagged variables, seasonal indicators, temperature, and heat demand contribute valuable information. Shrinking or removing these features results in a loss of relevant explanatory power and degrades predictive performance.\\
+
+The Random Forest regression model significantly improves forecasting accuracy compared to baseline and linear models, achieving an RMSE of 142.32, an MAE of 105.66, and an R² of 0.9220. These results highlight the model’s ability to capture nonlinear relationships and interaction effects among explanatory variables. Hyperparameter tuning further enhances model performance by improving generalization and reducing prediction error through appropriate choices of the number of trees and tree depth.\\
+
+Among all evaluated approaches, the XGBoost model achieves the best overall performance, with an RMSE of 107.10, an MAE of 63.80, and an R² of 0.9558. This superior performance can be attributed to the gradient boosting framework, which iteratively corrects prediction errors and effectively captures complex, nonlinear patterns in the data. Although XGBoost is computationally more demanding and requires careful hyperparameter tuning, the resulting performance gains clearly justify this additional complexity. The strong alignment between predicted and observed consumption values across the test period (Figure~1) indicates good generalization capability, making XGBoost the most reliable model in this study.\\
+
+Overall, the results demonstrate that machine learning models significantly outperform naive baselines and linear approaches. Feature engineering plays a crucial role in improving model accuracy, as evidenced by the close correspondence between actual and predicted consumption dynamics for the best performing models.
+
+\subsection{Challenges Encountered}
+
+One of the main challenges in this project was managing the strong seasonality present in electricity consumption data. Pronounced monthly fluctuations make accurate prediction particularly difficult during  winter and summer periods. While the inclusion of lagged features helps mitigate this issue, some prediction errors persist during peak consumption months.\\
+Another challenge relates to model complexity and computation time. To optimize XGBoost performance, hyperparameter tuning was conducted using GridSearchCV, which systematically evaluates multiple parameter combinations. Although this procedure improves predictive accuracy, it is computationally expensive. To address this issue, the tuned model was cached using \texttt{joblib} and saved to disk. On subsequent runs, the model is loaded directly when available, avoiding repeated grid searches and ensuring both computational efficiency and reproducibility.\\
+Data integration also required careful preprocessing. Combining datasets with different temporal resolutions monthly electricity consumption and meteorological data alongside yearly or quarterly GDP and population data introduced potential sources of noise despite interpolation and conversion to a monthly frequency.
+
+\subsection{Comparison with Expectations}
+
+The empirical results are consistent with expectations derived from the existing literature. Linear and LASSO regression models perform reasonably well but are consistently outperformed by nonlinear approaches. This confirms that electricity consumption is driven by complex, nonlinear relationships that cannot be fully captured by linear models. XGBoost was expected to deliver strong performance and indeed emerges as the most accurate model, while Random Forest also performs very well, confirming the effectiveness of ensemble based methods for electricity demand forecasting. Baseline models serve as useful reference points but demonstrate limited predictive capability, reinforcing the value of more advanced techniques.
+
+\subsection{Limitations of the Approach}
+
+Despite the encouraging results, several limitations should be acknowledged. First, the dataset size is relatively limited, which may restrict the generalizability of the models. Larger datasets or higher frequency data, such as daily or hourly consumption, could further enhance predictive performance. Second, the models rely on historical patterns and implicitly assume that future consumption dynamics will resemble past behavior. Structural changes in energy usage, including policy interventions, technological developments, or behavioral shifts, are not explicitly modeled. Finally, the feature set is restricted to a limited number of explanatory variables. Incorporating additional factors such as electricity prices, industrial production indicators, renewable energy penetration, or extreme weather events could improve forecasting accuracy.\\
 
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
 
 \subsection{Summary}
-Summarize your key findings and contributions.
+In this work, monthly electricity consumption in Switzerland was forecast using various regression and machine learning approaches. The models considered include naïve baseline models, linear regression, LASSO regression, and more advanced ensemble methods such as Random Forest and XGBoost. The models were trained using explanatory variables including temperature, heating demand (heat need), GDP, population, calendar variables, and lagged electricity consumption features. The dataset covers the period from 1991 to 2024 and was split chronologically into 70\% training data and 30\% test data in order to preserve the temporal structure of the time series. Model performance was evaluated using RMSE, MAE, and R² metrics. The results show that naïve models particularly the model based on consumption from the previous year already achieve reasonable performance due to the strong seasonality of electricity consumption. However, machine learning models significantly outperform these baseline approaches. Among all the models tested, XGBoost achieved the best overall performance, closely followed by Random Forest, highlighting the importance of capturing nonlinear relationships and complex interactions between variables for accurate energy demand forecasting.
 
 \subsection{Future Directions}
-Suggest potential improvements or extensions:
-\begin{itemize}
-    \item Methodological improvements
-    \item Additional experiments
-    \item Real-world applications
-\end{itemize}
+
+This work demonstrates that machine learning algorithms can be effectively used to predict future electricity consumption at the national level based on historical economic, demographic, and climatic data. The obtained results indicate that these models can serve as valuable decision support tools for public authorities and energy sector stakeholders, particularly in the context of strategic planning during the energy transition. Improved demand forecasting is essential to balance short term energy needs with long term sustainability and carbon neutrality objectives.
+
+In the future, several improvements could be considered. First, the use of higher frequency data, such as daily or hourly data, would better capture short term variations and consumption peaks. Furthermore, adding new explanatory variables, such as electricity prices, renewable energy production, industrial activity, or extreme weather events, could improve the accuracy of forecasts.
 
 % ================== REFERENCES ==================
 \newpage
 \section*{References}
 \addcontentsline{toc}{section}{References}
 
-% If using biblatex (recommended)
-% \printbibliography[heading=none]
-
-% Or manually:
 \begin{enumerate}
-    \item Author, A. (2024). \textit{Title of Article}. Journal Name, 10(2), 123-145.
-    \item Smith, B. \& Jones, C. (2023). \textit{Book Title}. Publisher.
-    \item Dataset Source. (2024). Dataset Name. Available at: \url{https://example.com}
+    \item Liu, Y., \& Li, J. (2023). \textit{Annual Electricity and Energy Consumption Forecasting for the UK Based on Back Propagation Neural Network, Multiple Linear Regression, and Least Square Support Vector Machine}. Processes, 11(1), 44. \url{https://doi.org/10.3390/pr11010044}
+    
+    \item Bessec, M., \& Fouquau, J. (2008). \textit{The non-linear link between electricity consumption and temperature in Europe: A threshold panel approach}. Energy Economics, 30(5), 2705-2721. \url{https://www.sciencedirect.com/science/article/pii/S0140988308000418}
+    
+    \item Swiss Federal Statistical Office (OFS). (2024). \textit{Population data}. \url{https://www.bfs.admin.ch/bfs/fr/home/statistiques.html}
+    
+    \item Swiss Federal Office of Meteorology and Climatology MeteoSwiss. (2024). \textit{Climate data: Swiss temperature and precipitation mean}. \url{https://www.meteoswiss.admin.ch/climate/foundations-of-climate-analysis-data-and-methods/swiss-temperature-and-precipitation-mean/data-on-the-swiss-temperature-mean.html}
+    
+    \item State Secretariat for Economic Affairs (SECO). (2024). \textit{Gross Domestic Product: Quarterly estimates}. \url{https://www.seco.admin.ch/seco/fr/home/wirtschaftslage---wirtschaftspolitik/Wirtschaftslage/bip-quartalsschaetzungen-/daten.html}
+    
+    \item Office fédéral de l'énergie OFEN (2025). \textit{Swiss electricity consumption}. \url{https://www.bfe.admin.ch/bfe/fr/home/approvisionnement/statistiques-et-geodonnees/statistiques-de-lenergie/statistique-de-l-electricite.html/#tab__content_bfe_fr_home_versorgung_statistik-und-geodaten_energiestatistiken_elektrizitaetsstatistik_jcr_content_par_tabs}
+    
+    \item DataCamp. (n.d.). \textit{Random Forests Classifier in Python}. \url{https://www.datacamp.com/tutorial/random-forests-classifier-python}
+    
+    \item IBM. (n.d.). \textit{What is Machine Learning?} IBM Think Topics. \url{https://www.ibm.com/think/topics/machine-learning}
+    
+    
+    \item Scheidegger, S. (2024). \textit{Introduction to Data Science and Advanced Programming}. Course materials, HEC Lausanne.
+    
 \end{enumerate}
 
+\vspace{1em}
+\noindent
+\textbf{Note on AI Assistance:} \textit {ChatGPT (GPT-4) was used as a debugging tool to assist with code troubleshooting and error resolution during the development of this project. All conceptual work, analysis, and final code implementations remain the original work of the author.}
 % ================== APPENDICES ==================
 \newpage
 \appendix
 \section{Additional Figures}
 \label{app:figures}
 
-Include supplementary figures or tables that support but aren't essential to the main narrative.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Swiss_electricity_consumption_time_series.png}
+\caption{Swiss electricity consumption over time in GWh }
+\label{fig:results}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{linear_regression_train_test.png}
+\caption{linear regression regression. actual vs prediction test and train}
+\label{fig:results}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{correlation_matrix.png}
+\caption{Correltation matrix}
+\label{fig:results}
+\end{figure}
 \section{Code Repository}
 \label{app:code}
 
 \noindent
-\textbf{GitHub Repository:} \url{https://github.com/yourusername/project-repo}
+\textbf{GitHub Repository:} \url{https://github.com/mel799/Project-final.git}
+
+\subsection{Repository Structure}
+
+The repository is organized as follows:
+
+\begin{small}
+\begin{verbatim}
+Project-final/
+|-- main.py                     # Main entry point
+|-- src/
+|   |-- data_loader.py          # Load data
+|   |-- data_preprocessing.py   # Data cleaning and feature engineering
+|   |-- evaluation.py           # EDA analysis
+|   |-- model_visualisation.py  # Creates graphical visualizations
+|   |-- models_evaluation.py    # Evaluates models using metrics
+|   |-- models_regression.py    # Regression models
+|-- test/                       # Random Forest tuning
+|-- data/
+|   |-- raw/
+|       |-- climate_Swiss.txt           # Swiss meteorological data
+|       |-- electricity.csv             # Swiss electricity consumption
+|       |-- GDP_quarterly.csv           # Swiss GDP (quarterly)
+|       |-- population_data_yearly.csv  # Population per year
+|-- environment.yml             # Conda environment specification
+|-- PROPOSAL.md                 # Project proposal (November)
+|-- Project_report.tex          # Final report (LaTeX)
+|-- project_report.pdf          # Final report (PDF)
++-- README.md                   # Project documentation
+\end{verbatim}
+\end{small}
+
+\subsection{Installation Instructions}
+
+To install and run the project locally, follow these steps in a new directory of your choice.
+
+\begin{enumerate}
+    \item \textbf{Clone the project from GitHub}
+    
+    Open a terminal and run:
+    \begin{verbatim}
+git clone https://github.com/mel799/Project-final.git
+cd Project-final
+    \end{verbatim}
+    
+    \item \textbf{Create a new Conda environment}
+    \begin{verbatim}
+conda env create -f environment.yml -n electricity-project
+    \end{verbatim}
+    
+    \item \textbf{Activate the environment}
+    \begin{verbatim}
+conda activate electricity-project
+    \end{verbatim}
+\end{enumerate}
+
+\subsection{Usage and Reproducibility}
+
+To reproduce the results, run the main script:
+
+\begin{verbatim}
+python main.py
+\end{verbatim}
 
 \noindent
-Provide information about:
+All required datasets are already included in the repository under the directory \texttt{data/raw/}. No additional data download is required.
+
+\subsection{Expected Output}
+
+Running the project produces the following outputs:
+
 \begin{itemize}
-    \item Repository structure
-    \item Installation instructions
-    \item How to reproduce results
+    \item Loaded and preprocessed datasets
+    \item Creation of two folders in the \texttt{data} directory: \texttt{clean} and \texttt{dataset}
+    \item Exploratory Data Analysis (EDA) results
+    \item Trained regression models
+    \item Performance comparison using regression metrics (RMSE, MAE, $R^2$)
+    \item Evaluation results of the best regression model stored in:
+    \begin{verbatim}
+results/models/model_scores.txt
+    \end{verbatim}
+    \item Visualization of the best model stored in:
+    \begin{verbatim}
+results/figures/
+    \end{verbatim}
 \end{itemize}
 
 \end{document}
